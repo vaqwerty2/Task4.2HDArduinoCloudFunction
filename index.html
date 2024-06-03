@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arduino LED Control</title>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBJZvXIlbJvbn1IkLx7Prxc5NQGNuH-Tqg",
+      authDomain: "traffic-light-s223130154.firebaseapp.com",
+      databaseURL: "https://traffic-light-s223130154-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "traffic-light-s223130154",
+      storageBucket: "traffic-light-s223130154.appspot.com",
+      messagingSenderId: "46506113617",
+      appId: "1:46506113617:web:4615844b63034340029670",
+      measurementId: "G-JL7W869FF8"
+    };
+
+    // Initialize Firebase
+    console.log("Initializing Firebase...");
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    console.log("Firebase initialized.");
+
+    function toggleLED(color) {
+      console.log("Button clicked for color: " + color);
+      const ledRef = ref(database, 'LEDcolor/' + color);
+      get(ledRef).then(snapshot => {
+        const currentState = snapshot.val();
+        console.log("Current state of " + color + " LED: " + currentState);
+        set(ledRef, !currentState).then(() => {
+          console.log(color + " LED state toggled to: " + !currentState);
+        }).catch(error => {
+          console.error("Error setting LED state: ", error);
+        });
+      }).catch(error => {
+        console.error("Error getting LED state: ", error);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("DOM fully loaded and parsed");
+      const redBtn = document.getElementById('redBtn');
+      const greenBtn = document.getElementById('greenBtn');
+      const blueBtn = document.getElementById('blueBtn');
+
+      if (redBtn && greenBtn && blueBtn) {
+        redBtn.addEventListener('click', () => toggleLED('Red'));
+        greenBtn.addEventListener('click', () => toggleLED('Green'));
+        blueBtn.addEventListener('click', () => toggleLED('Blue'));
+        console.log("Event listeners added to buttons.");
+      } else {
+        console.error("Button elements not found.");
+      }
+    });
+  </script>
+
+  <style media="screen">
+    body { background: #121212; color: #FFFFFF; font-family: 'Arial', sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    #container { text-align: center; }
+    #welcome-message { margin-bottom: 20px; font-size: 24px; font-weight: bold; color: #FF6347; }
+    #control-panel { max-width: 360px; padding: 32px 24px; background: #1E1E1E; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+    #control-panel h1 { font-size: 28px; font-weight: 300; color: #FFD700; margin: 0 0 20px; }
+    #control-panel button { display: block; width: 100%; padding: 16px; margin: 8px 0; color: #FFFFFF; border: none; border-radius: 8px; text-align: center; cursor: pointer; font-size: 18px; transition: background 0.3s; }
+    #redBtn { background: #FF6347; } /* Tomato color for Red LED */
+    #redBtn:hover { background: #FF4500; }
+    #redBtn:active { background: #B22222; }
+    #greenBtn { background: #32CD32; } /* LimeGreen color for Green LED */
+    #greenBtn:hover { background: #228B22; }
+    #greenBtn:active { background: #006400; }
+    #blueBtn { background: #1E90FF; } /* DodgerBlue color for Blue LED */
+    #blueBtn:hover { background: #1C86EE; }
+    #blueBtn:active { background: #104E8B; }
+    #control-panel button:disabled { background: #555555; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="welcome-message">Welcome to the Arduino LED Controller!</div>
+    <div id="control-panel">
+      <h1>Control LEDs</h1>
+      <button id="redBtn">Toggle Red LED</button>
+      <button id="greenBtn">Toggle Green LED</button>
+      <button id="blueBtn">Toggle Blue LED</button>
+    </div>
+  </div>
+</body>
+</html>
